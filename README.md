@@ -8,6 +8,8 @@ Blast+
 
 Usage: ./pbadapterfilt.sh [ -b .bam prefix ] [ -t Number of threads for blastn. Default=1]
 
+If no arguments are provided, the script will run on all .bam files in the working directory.
+
 Sheina B. Sim
 USDA-ARS
 US Pacific Basin Agricultural Research Service
