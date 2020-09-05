@@ -6,9 +6,8 @@ Dependencies:
 * Bamtools 
 * Blast+
 
-> export PATH=$PATH:<PATH TO HiFiAdapterFilt>
-
-> export PATH=$PATH:<PATH TO HiFiAdapterFilt>/DB
+> export PATH=$PATH:[PATH TO HiFiAdapterFilt]
+> export PATH=$PATH:[PATH TO HiFiAdapterFilt]/DB
 
 
 Usage: 
