@@ -2,6 +2,7 @@
 
 threads=1
 outdir=$(pwd)
+DBpath=$(echo $PATH | sed 's/:/\n/g' | grep "HiFiAdapterFilt/DB" | head -n 1)
 
 unset name
 
@@ -57,7 +58,7 @@ for x in `echo ${reads_pref}`
 do
 if [ ! -s ${outdir}/${x}.contaminant.blastout ]
 then
-blastn -db $BLASTDB/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust yes -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout
+blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust yes -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout
 fi
 done
 
