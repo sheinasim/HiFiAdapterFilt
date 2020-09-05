@@ -3,10 +3,13 @@ Convert .bam to .fastq and remove reads with remnant PacBio adapter sequences
 
 Dependencies:
 
-Bamtools 
-Blast+
+* Bamtools 
+* Blast+
 
-Usage: ./pbadapterfilt.sh [ -b .bam prefix ] [ -t Number of threads for blastn. Default=1]
+export PATH=$PATH:<PATH TO HiFiAdapterFilt>
+export PATH=$PATH:<PATH TO HiFiAdapterFilt>/DB
+
+Usage: sh pbadapterfilt.sh [ -b .bam prefix ] [ -t Number of threads for blastn. Default=1] [ -o outdirectory prefix Default=. ]
 
 If no arguments are provided, the script will run on all .bam files in the working directory.
 
