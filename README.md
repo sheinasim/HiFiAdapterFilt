@@ -6,12 +6,13 @@ Dependencies:
 * Bamtools 
 * Blast+
 
-export PATH=$PATH:<PATH TO HiFiAdapterFilt>
+> export PATH=$PATH:<PATH TO HiFiAdapterFilt>
 
-export PATH=$PATH:<PATH TO HiFiAdapterFilt>/DB
+> export PATH=$PATH:<PATH TO HiFiAdapterFilt>/DB
 
 
-Usage: sh pbadapterfilt.sh [ -b .bam prefix ] [ -t Number of threads for blastn. Default=1] [ -o outdirectory prefix Default=. ]
+Usage: 
+> sh pbadapterfilt.sh [ -b .bam prefix ] [ -t Number of threads for blastn. Default=1] [ -o outdirectory prefix Default=. ]
 
 
 If no arguments are provided, the script will run on all .bam files in the working directory.
