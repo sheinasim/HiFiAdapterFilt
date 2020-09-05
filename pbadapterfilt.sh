@@ -32,6 +32,13 @@ reads_pref=$(ls ${bamprefix}*bam | sed 's/\.bam//' | rev | cut -d'/' -f 1 | rev)
 read_path=$(dirname ${bamprefix}*.bam)
 read_path_str=$(echo ${read_path} | cut -d" " -f 1)
 
+## Create out directory if necessary
+
+if [ ! -d ${outdir} ]
+then 
+mkdir ${outdir}
+fi
+
 ## Convert .bam to .fastq
 
 echo "Converting .bam to .fastq on $(date)"
