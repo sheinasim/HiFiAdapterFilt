@@ -34,6 +34,8 @@ read_path_str=$(echo ${read_path} | cut -d" " -f 1)
 
 ## Convert .bam to .fastq
 
+echo "Converting .bam to .fastq on $(date)"
+
 for x in `echo ${reads_pref}`
 do
 if [ ! -s ${outdir}/${x}.fastq ]
@@ -47,39 +49,20 @@ done
 for x in `echo ${reads_pref}`
 do
 if [ ! -s ${outdir}/${x}.fasta ]
-then    
-bamtools convert -format fasta -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fasta
-fi
-done
-
-## Blast raw reads to PB adapter database
-
-for x in `echo ${reads_pref}`
-do
-if [ ! -s ${outdir}/${x}.contaminant.blastout ]
 then
-blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust yes -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout
+echo "Converting .bam to .fasta on $(date)."    
+bamtools convert -format fasta -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fasta &
+wait
+echo "Identifying reads with adapter contamination on $(date)."
+blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust yes -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+wait
+echo "Creating blocklist of reads to filter on $(date)."
+cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' '{if ($3 > 95) print $1}' | sort -u > ${outdir}/${x}.blocklist &
+wait
+echo "Removing adapter contaminated reads from .fastq on $(date)."
+cat ${outdir}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" > ${outdir}/${x}.filt.fastq 
+wait
+echo "Finished on $(date)"
 fi
 done
-
-## Create blocklist of reads to remove
-
-for x in `echo ${reads_pref}`
-do
-if [ ! -s ${outdir}/${x}.blocklist ]
-then
-cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' '{if ($3 > 95) print $1}' | sort -u > ${outdir}/${x}.blocklist
-fi
-done
-
-## Filter adapter contaminated reads from .fastq
-
-for x in `echo ${reads_pref}`
-do
-if [ ! -s ${outdir}/${x}.filt.fastq ]
-then
-cat ${outdir}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" > ${outdir}/${x}.filt.fastq
-fi
-done
-
 
