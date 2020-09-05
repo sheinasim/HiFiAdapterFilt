@@ -7,8 +7,8 @@ Dependencies:
 * Blast+
 
 > export PATH=$PATH:[PATH TO HiFiAdapterFilt]
-> export PATH=$PATH:[PATH TO HiFiAdapterFilt]/DB
 
+> export PATH=$PATH:[PATH TO HiFiAdapterFilt]/DB
 
 Usage: 
 > sh pbadapterfilt.sh [ -b .bam prefix ] [ -t Number of threads for blastn. Default=1] [ -o outdirectory prefix Default=. ]
