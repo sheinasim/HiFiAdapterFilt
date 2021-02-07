@@ -61,7 +61,7 @@ echo "Converting .bam to .fasta on $(date)."
 bamtools convert -format fasta -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fasta &
 wait
 echo "Identifying reads with adapter contamination on $(date)."
-blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust yes -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
 wait
 echo "Creating blocklist of reads to filter on $(date)."
 cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' '{if (($2 ~ /NGB00972/ && $3 >= 97 && $4 >= 44) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &  
