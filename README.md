@@ -16,7 +16,9 @@ Usage:
 
 If no arguments are provided, the script will run on all .bam files in the working directory.
 
-### If this script is useful to you, please cite the following in your publication:
+### Citation
+
+If this script is useful to you, please cite the following in your publication:
 
 ```
 @software{HiFiAdapterFilt,
