@@ -18,6 +18,15 @@ If no arguments are provided, the script will run on all .bam files in the worki
 
 ### If this script is useful to you, please cite the following in your publication:
 
+@software{HiFiAdapterFilt,
+  author = {{Sheina B. Sim}},
+  title = {HiFiAdapterFilt},
+  url = {https://hadoop.apache.org},
+  DOI = {10.5281/zenodo.4716418},
+  version = {v1.0.0},
+  date = {2021-04-23},
+}
+
 <a href="https://doi.org/10.5281/zenodo.4716418"><img src="https://github.com/sheinasim/HiFiAdapterFilt/blob/master/zenodo.4716418.png" width="250" title="HiFiAdapterFilt DOI" alt="DOI"></a>
 
 Sheina B. Sim  
