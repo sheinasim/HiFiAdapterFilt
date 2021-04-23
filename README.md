@@ -21,7 +21,7 @@ If no arguments are provided, the script will run on all .bam files in the worki
 @software{HiFiAdapterFilt,
   author = {{Sheina B. Sim}},
   title = {HiFiAdapterFilt},
-  url = {https://hadoop.apache.org},
+  url = {https://github.com/sheinasim/HiFiAdapterFilt},
   DOI = {10.5281/zenodo.4716418},
   version = {v1.0.0},
   date = {2021-04-23},
