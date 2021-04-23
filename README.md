@@ -20,6 +20,9 @@ If no arguments are provided, the script will run on all .bam files in the worki
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg?sanitize=true)](https://doi.org/10.5281/zenodo.4716418)
 
+![Test DOI Badge](https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg)
+<img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg">
+
 Sheina B. Sim  
 USDA-ARS  
 US Pacific Basin Agricultural Research Service  
