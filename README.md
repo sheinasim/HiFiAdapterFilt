@@ -20,7 +20,7 @@ If no arguments are provided, the script will run on all .bam files in the worki
 
 ```
 @software{HiFiAdapterFilt,
-  author = {{Sheina B. Sim}},
+  author = {Sheina B. Sim},
   title = {HiFiAdapterFilt},
   url = {https://github.com/sheinasim/HiFiAdapterFilt},
   DOI = {10.5281/zenodo.4716418},
