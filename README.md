@@ -16,6 +16,9 @@ Usage:
 
 If no arguments are provided, the script will run on all .bam files in the working directory.
 
+Citation:
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg)](https://doi.org/10.5281/zenodo.4716418)
+
 Sheina B. Sim  
 USDA-ARS  
 US Pacific Basin Agricultural Research Service  
