@@ -23,7 +23,7 @@ If this script is useful to you, please cite the following in your publication:
 
 ```
 @software{HiFiAdapterFilt,
-  author = {Sheina B. Sim},
+  author = {Sim, Sheina B.},
   title = {HiFiAdapterFilt},
   url = {https://github.com/sheinasim/HiFiAdapterFilt},
   DOI = {10.5281/zenodo.4716418},
