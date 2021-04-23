@@ -20,8 +20,8 @@ If no arguments are provided, the script will run on all .bam files in the worki
 
 [![DOI](https://github.com/sheinasim/HiFiAdapterFilt/zenodo.4716418.png)](https://doi.org/10.5281/zenodo.4716418)
 
-![Test DOI Badge](https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg)
-<img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg">
+![Test DOI Badge](https://github.com/sheinasim/HiFiAdapterFilt/zenodo.4716418.png)
+<img src="https://github.com/sheinasim/HiFiAdapterFilt/zenodo.4716418.png">
 
 ![Alt text](https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg?sanitize=true)
 <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4716418.svg?sanitize=true">
