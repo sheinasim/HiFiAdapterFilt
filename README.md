@@ -18,7 +18,7 @@ If no arguments are provided, the script will run on all .bam files in the worki
 
 ### If this script is useful to you, please cite the following in your publication:
 
-[![DOI](https://github.com/sheinasim/HiFiAdapterFilt/zenodo.4716418.png)](https://doi.org/10.5281/zenodo.4716418)
+[![DOI](https://github.com/sheinasim/HiFiAdapterFilt/blob/master/zenodo.4716418.png)](https://doi.org/10.5281/zenodo.4716418)
 
 ![Test DOI Badge](https://github.com/sheinasim/HiFiAdapterFilt/zenodo.4716418.png)
 <img src="https://github.com/sheinasim/HiFiAdapterFilt/zenodo.4716418.png">
