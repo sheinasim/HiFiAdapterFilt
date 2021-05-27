@@ -87,9 +87,12 @@ p1=`awk -v n1=$r2 -v n2=$f 'BEGIN{ans=n2/n1*100; print ans}'` #proportion of ada
 r3=`awk -v r2=$r2 -v f=$f 'BEGIN{ans=r2-f; print ans}'` #number of reads retained
 p2=`awk -v p1=$p1 'BEGIN{ans=1-p1; print ans}'` #proportion of reads retained
 
-echo ""
-echo "Number of ccs reads:" $r2
-echo "Number of adapter contaminated ccs reads:" $f "("$p1"% of total)"
-echo "Number of ccs reads retained:" $r3 "("$p2"% of total)"
-echo ""
-echo "Finished on $(date)"
+touch ${outdir}/${x}.stats
+
+echo "For the" ${x} "dataset:" >>${outdir}/${x}.stats 
+echo "" >>${outdir}/${x}.stats
+echo "Number of ccs reads:" $r2 >>${outdir}/${x}.stats
+echo "Number of adapter contaminated ccs reads:" $f "("$p1"% of total)" >>${outdir}/${x}.stats
+echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${outdir}/${x}.stats
+echo "" >>${outdir}/${x}.stats
+echo "Finished on $(date)" >>${outdir}/${x}.stats
