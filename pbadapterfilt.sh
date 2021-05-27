@@ -1,6 +1,6 @@
 #!/bin/bash
 
-threads=1
+threads=8
 outdir=$(pwd)
 DBpath=$(echo $PATH | sed 's/:/\n/g' | grep "HiFiAdapterFilt/DB" | head -n 1)
 
@@ -20,7 +20,7 @@ done
 
 if ((OPTIND == 1))
 then
-    printf "No options specified. \nFiltering .bam files in working directoryi. \n"
+    printf "No options specified. \nFiltering files in working directory. \n"
 fi
 
 shift $((OPTIND - 1))
@@ -36,18 +36,17 @@ read_path_str=$(echo ${read_path} | cut -d" " -f 1)
 
 if [ ! -d ${outdir} ]
 then 
-mkdir ${outdir}
+	mkdir ${outdir}
 fi
 
 ## Convert .bam to .fastq
-
-echo "Converting .bam to .fastq on $(date)"
 
 for x in `echo ${reads_pref}`
 do
 if [ ! -s ${outdir}/${x}.fastq ]
 then
-bamtools convert -format fastq -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fastq &
+    echo "Converting .bam to .fastq on $(date)"
+    bamtools convert -format fastq -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fastq &
 fi
 done
 
@@ -57,19 +56,40 @@ for x in `echo ${reads_pref}`
 do
 if [ ! -s ${outdir}/${x}.fasta ]
 then
-echo "Converting .bam to .fasta on $(date)."    
-bamtools convert -format fasta -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fasta &
-wait
-echo "Identifying reads with adapter contamination on $(date)."
-blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
-wait
-echo "Creating blocklist of reads to filter on $(date)."
-cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' '{if (($2 ~ /NGB00972/ && $3 >= 97 && $4 >= 44) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &  
-wait
-echo "Removing adapter contaminated reads from .fastq on $(date)."
-cat ${outdir}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" > ${outdir}/${x}.filt.fastq 
-wait
-echo "Finished on $(date)"
+	echo "Converting .bam to .fasta on $(date)."    
+	bamtools convert -format fasta -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fasta &
+	wait
+	echo "Identifying reads with adapter contamination on $(date)."
+	blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+	wait
+	echo "Creating blocklist of reads to filter on $(date)."
+	cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' '{if (($2 ~ /NGB00972/ && $3 >= 97 && $4 >= 44) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &  
+	wait
+	echo "Removing adapter contaminated reads from .fastq on $(date)."
+	cat ${outdir}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" > ${outdir}/${x}.filt.fastq 
+else
+	echo "Identifying reads with adapter contamination on $(date)."
+	blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue .01 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+	wait
+	echo "Creating blocklist of reads to filter on $(date)."
+	cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' '{if (($2 ~ /NGB00972/ && $3 >= 97 && $4 >= 44) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &
+	wait
+	echo "Removing adapter contaminated reads from .fastq on $(date)."
+	cat ${outdir}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" > ${outdir}/${x}.filt.fastq
+	wait
 fi
 done
 
+f=`cat ${outdir}/${x}.blocklist | wc -l` #number of adapter contaminated reads
+r1=`cat ${outdir}/${x}.fastq | wc -l` 
+r2=`awk -v r1=$r1 'BEGIN{ans=r1/4; print ans}'` #number of ccs reads
+p1=`awk -v n1=$r2 -v n2=$f 'BEGIN{ans=n2/n1*100; print ans}'` #proportion of adapter contaminated reads
+r3=`awk -v r2=$r2 -v f=$f 'BEGIN{ans=r2-f; print ans}'` #number of reads retained
+p2=`awk -v p1=$p1 'BEGIN{ans=1-p1; print ans}'` #proportion of reads retained
+
+echo ""
+echo "Number of ccs reads:" $r2
+echo "Number of adapter contaminated ccs reads:" $f "("$p1"% of total)"
+echo "Number of ccs reads retained:" $r3 "("$p2"% of total)"
+echo ""
+echo "Finished on $(date)"
