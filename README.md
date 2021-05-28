@@ -17,6 +17,15 @@ Add script and database to your path using:
 
 If no arguments are provided, the script will run on all .bam files in the working directory.
 
+## Outputs
+
+* {prefix}.fastq (Converted from .bam)
+* {prefix}.fasta (Converted from .bam)
+* {prefix}.contaminant.blastout (Output of BLAST search)
+* {prefix}.blocklist (Headers of PB adapter contaminated reads to be removed)
+* {prefix}.filt.fastq (Fastq reads free of PB adapter sequence ready for assembly)
+* {prefix}.stats (File with simple math on number of reads removed, etc)
+
 ### Citation
 
 If this script is useful to you, please cite the following in your publication:
