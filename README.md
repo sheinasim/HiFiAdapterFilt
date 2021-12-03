@@ -13,17 +13,17 @@ Add script and database to your path using:
 
 ### Usage
   
-> sh pbadapterfilt.sh [ -b .bam prefix ] [ -t Number of threads for blastn. Default=1] [ -o outdirectory prefix Default=. ]  
+> bash pbadapterfilt.sh [ -p file Prefix ] [ -l minimum Length of adapter match to remove. Default=44 ] [ -m minimum percent Match of adapter to remove. Default=97 ] [ -t Number of threads for blastn. Default=8 ] [ -o outdirectory prefix Default=. ]  
 
-If no arguments are provided, the script will run on all .bam files in the working directory.
+All flags are optional. 
+
+If no -p argument is provided, the script will run on all sequence files (.bam, .fastq, .fastq.gz, .fq, .fq.gz) in the working directory.
 
 ## Outputs
 
-* {prefix}.fastq (Converted from .bam)
-* {prefix}.fasta (Converted from .bam)
 * {prefix}.contaminant.blastout (Output of BLAST search)
 * {prefix}.blocklist (Headers of PB adapter contaminated reads to be removed)
-* {prefix}.filt.fastq (Fastq reads free of PB adapter sequence ready for assembly)
+* {prefix}.filt.fastq.gz (Fastq reads free of PB adapter sequence ready for assembly)
 * {prefix}.stats (File with simple math on number of reads removed, etc)
 
 ### Citation
