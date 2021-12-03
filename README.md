@@ -8,12 +8,12 @@ Dependencies:
 
 Add script and database to your path using:  
 
-> export PATH=$PATH:[PATH TO HiFiAdapterFilt]  
-> export PATH=$PATH:[PATH TO HiFiAdapterFilt]/DB  
+> ``export PATH=$PATH:[PATH TO HiFiAdapterFilt]``  
+> ``export PATH=$PATH:[PATH TO HiFiAdapterFilt]/DB``  
 
 ### Usage
   
-> bash pbadapterfilt.sh [ -p file Prefix ] [ -l minimum Length of adapter match to remove. Default=44 ] [ -m minimum percent Match of adapter to remove. Default=97 ] [ -t Number of threads for blastn. Default=8 ] [ -o outdirectory prefix Default=. ]  
+> ``bash pbadapterfilt.sh [ -p file Prefix ] [ -l minimum Length of adapter match to remove. Default=44 ] [ -m minimum percent Match of adapter to remove. Default=97 ] [ -t Number of threads for blastn. Default=8 ] [ -o outdirectory prefix Default=. ]`` 
 
 All flags are optional. 
 
