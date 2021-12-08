@@ -32,7 +32,10 @@ shift $((OPTIND - 1))
 
 ## Set variables based on options
 
-rm ${prefix}.temp_file_list
+if [ -f ${prefix}.temp_file_list ]
+then
+	rm ${prefix}.temp_file_list
+fi
 
 if [ ${prefix} = "all" ]
 then
@@ -65,6 +68,12 @@ then
 fi
 
 for x in `cat ${prefix}.temp_file_list`; do echo $x; done
+
+if [ -z ${reads_pref} ]
+then
+	echo "No files of proper name or filetype recognized. Exiting $(date)."
+	exit
+fi
 
 ## BLAST raw files
 
@@ -272,9 +281,10 @@ do
 	   echo "" >>${outdir}/${x}.stats
 	   echo "Finished on $(date)" >>${outdir}/${x}.stats
 	   rm ${read_path_str}/${x}.fasta
-	else
-	   echo "No files of proper name or filetype recognized. Exiting $(date)." 
 	fi
 done
 
-rm ${prefix}.temp_file_list
+if [ -f ${prefix}.temp_file_list ]
+then
+	rm ${prefix}.temp_file_list
+fi
