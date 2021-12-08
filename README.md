@@ -3,8 +3,12 @@ Convert .bam to .fastq and remove reads with remnant PacBio adapter sequences
 
 Dependencies:
 
-* Bamtools 
+* BamTools 
 * BLAST+
+
+Optional:
+
+* pigz
 
 Add script and database to your path using:  
 

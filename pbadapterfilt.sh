@@ -18,8 +18,8 @@ l) adapterlength=${OPTARG};;
 m) pctmatch=${OPTARG};;
 t) threads=${OPTARG} ;;
 o) outdir=${OPTARG} ;;
-h) echo "Usage: $0 [ -p sequence file Prefix ] [ -l minimum match Length to filter. Default=44 ] [ -m minimum Match percentage to filter. Default=97]  [ -t number of Threads for blastn. Default=8 ] [ -o Outdirectory prefix Default=. ]" ;;
-?) echo "Usage: $0 [ -p sequence file Prefix ] [ -l minimum match Length to filter. Default=44 ] [ -m minimum Match percentage to filter. Default=97]  [ -t number of Threads for blastn. Default=8 ] [ -o Outdirectory prefix Default=. ]" ;;
+h) echo "Usage: $0 [ -p sequence file Prefix ] [ -l minimum match Length to filter. Default=44 ] [ -m minimum Match percentage to filter. Default=97]  [ -t number of Threads for blastn. Default=8 ] [ -o Outdirectory prefix Default=. ]"; exit ;;
+?) echo "Usage: $0 [ -p sequence file Prefix ] [ -l minimum match Length to filter. Default=44 ] [ -m minimum Match percentage to filter. Default=97]  [ -t number of Threads for blastn. Default=8 ] [ -o Outdirectory prefix Default=. ]"; exit ;;
 esac
 done
 
@@ -75,14 +75,30 @@ do
 
 	if [ -s ${read_path_str}/${x}.fastq.gz ]
 	then
+
+	   if command -v pigz &> /dev/null
+	   then
+		pigz -cd -p ${threads} ${read_path_str}/${x}.fastq.gz > ${read_path_str}/${x}.fastq 
+	   else
+	   	zcat ${read_path_str}/${x}.fastq.gz > ${read_path_str}/${x}.fastq 
+	   fi
+
 	   echo "Identifying reads in ${x}.fastq.gz with adapter contamination on $(date)."
-	   zcat ${read_path_str}/${x}.fastq.gz | sed -n '1~4s/^@/>/p;2~4p' | blastn -db $DBpath/pacbio_vectors_db -query - -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+	   cat ${read_path_str}/${x}.fastq | sed -n '1~4s/^@/>/p;2~4p' > ${read_path_str}/${x}.fasta
+	   blastn -db $DBpath/pacbio_vectors_db -query ${read_path_str}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
 	   wait
 	   echo "Creating blocklist for ${x}.fastq.gz on $(date)."
 	   cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' -v var1="${adapterlength}" -v var2="${pctmatch}" '{if (($2 ~ /NGB00972/ && $3 >= var2 && $4 >= var1) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &
 	   wait
 	   echo "Removing adapter contaminated reads from ${x}.fastq.gz on $(date)." 
-	   zcat ${read_path_str}/${x}.fastq.gz | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+
+	   if command -v pigz &> /dev/null
+	   then
+	   	cat ${read_path_str}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | pigz -p ${threads} --fast > ${outdir}/${x}.filt.fastq.gz
+	   else
+	   	cat ${read_path_str}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+	   fi
+
 	   f=`cat ${outdir}/${x}.blocklist | wc -l` #number of adapter contaminated reads
 	   r1=`zcat ${read_path_str}/${x}.fastq.gz | wc -l` 
 	   r2=`awk -v r1=$r1 'BEGIN{ans=r1/4; print ans}'` #number of ccs reads
@@ -97,17 +113,35 @@ do
 	   echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${outdir}/${x}.stats
 	   echo "" >>${outdir}/${x}.stats
 	   echo "Finished on $(date)" >>${outdir}/${x}.stats
+	   rm ${read_path_str}/${x}.fastq
+	   rm ${read_path_str}/${x}.fasta
 
 	elif [ -s ${read_path_str}/${x}.fq.gz ]
 	then
 	   echo "Identifying reads in ${x}.fq.gz with adapter contamination on $(date)."
-	   zcat ${read_path_str}/${x}.fq.gz | sed -n '1~4s/^@/>/p;2~4p' |blastn -db $DBpath/pacbio_vectors_db -query - -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+
+	   if command -v pigz &> /dev/null
+	   then
+		pigz -cd -p ${threads} ${read_path_str}/${x}.fq.gz > ${read_path_str}/${x}.fq
+	   else
+	   	zcat ${read_path_str}/${x}.fq.gz > ${read_path_str}/${x}.fq 
+	   fi
+
+	   cat ${read_path_str}/${x}.fq | sed -n '1~4s/^@/>/p;2~4p' > ${read_path_str}/${x}.fasta 
+	   blastn -db $DBpath/pacbio_vectors_db -query ${read_path_str}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
 	   wait
 	   echo "Creating blocklist for ${x}.fq.gz on $(date)."
 	   cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' -v var1="${adapterlength}" -v var2="${pctmatch}" '{if (($2 ~ /NGB00972/ && $3 >= var2 && $4 >= var1) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &
 	   wait
 	   echo "Removing adapter contaminated reads from ${x}.fastq.gz on $(date)." 
-	   zcat ${read_path_str}/${x}.fq.gz | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+
+	   if command -v pigz &> /dev/null
+	   then
+	   	cat ${read_path_str}/${x}.fq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | pigz -p ${threads} --fast > ${outdir}/${x}.filt.fastq.gz
+	   else
+	   	cat ${read_path_str}/${x}.fq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+	   fi
+
 	   f=`cat ${outdir}/${x}.blocklist | wc -l` #number of adapter contaminated reads
 	   r1=`zcat ${read_path_str}/${x}.fq.gz | wc -l` 
 	   r2=`awk -v r1=$r1 'BEGIN{ans=r1/4; print ans}'` #number of ccs reads
@@ -122,20 +156,21 @@ do
 	   echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${outdir}/${x}.stats
 	   echo "" >>${outdir}/${x}.stats
 	   echo "Finished on $(date)" >>${outdir}/${x}.stats
-
+	   rm ${read_path_str}/${x}.fq
+	   rm ${read_path_str}/${x}.fasta
 	elif [ -s ${read_path_str}/${x}.bam ]
 	then
 
 	   if [ ! -s ${read_path_str}/${x}.fastq ]
 		then
     		echo "Converting ${x}.bam to ${x}.fastq on $(date)"
-    		bamtools convert -format fastq -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fastq &
+    		bamtools convert -format fastq -in ${read_path_str}/${x}.bam -out ${read_path_str}/${x}.fastq &
 	   fi
 
 	   if [ ! -s ${read_path_str}/${x}.fasta ]
 	   then
         	echo "Converting ${x}.bam to ${x}.fasta on $(date)."    
-        	bamtools convert -format fasta -in ${read_path_str}/${x}.bam -out ${outdir}/${x}.fasta &
+        	bamtools convert -format fasta -in ${read_path_str}/${x}.bam -out ${read_path_str}/${x}.fasta &
         	wait
 	   fi
 
@@ -146,7 +181,14 @@ do
 	   cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' -v var1="${adapterlength}" -v var2="${pctmatch}" '{if (($2 ~ /NGB00972/ && $3 >= var2 && $4 >= var1) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &
 	   wait
 	   echo "Removing adapter contaminated reads from ${x}.bam on $(date)." 
-	   cat ${outdir}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+
+	   if command -v pigz &> /dev/null
+	   then
+	   	cat ${read_path_str}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | pigz -p ${threads} --fast > ${outdir}/${x}.filt.fastq.gz
+	   else
+	   	cat ${read_path_str}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+	   fi
+
 	   f=`cat ${outdir}/${x}.blocklist | wc -l` #number of adapter contaminated reads
 	   r1=`cat ${outdir}/${x}.fastq | wc -l` 
 	   r2=`awk -v r1=$r1 'BEGIN{ans=r1/4; print ans}'` #number of ccs reads
@@ -161,19 +203,27 @@ do
 	   echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${outdir}/${x}.stats
 	   echo "" >>${outdir}/${x}.stats
 	   echo "Finished on $(date)" >>${outdir}/${x}.stats
-	   rm ${outdir}/${x}.fasta
-	   rm ${outdir}/${x}.fastq
+	   rm ${read_path_str}/${x}.fasta
+	   rm ${read_path_str}/${x}.fastq
 
 	elif [ -s ${read_path_str}/${x}.fastq ]
 	then
 	   echo "Identifying reads in ${x}.fastq with adapter contamination on $(date)."
-	   cat ${read_path_str}/${x}.fastq | sed -n '1~4s/^@/>/p;2~4p' | blastn -db $DBpath/pacbio_vectors_db -query - -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+	   cat ${read_path_str}/${x}.fastq | sed -n '1~4s/^@/>/p;2~4p' > ${read_path_str}/${x}.fasta
+	   blastn -db $DBpath/pacbio_vectors_db -query ${read_path_str}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
 	   wait
 	   echo "Creating blocklist for ${x}.fastq on $(date)."
 	   cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' -v var1="${adapterlength}" -v var2="${pctmatch}" '{if (($2 ~ /NGB00972/ && $3 >= var2 && $4 >= var1) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &
 	   wait
 	   echo "Removing adapter contaminated reads from ${x}.fastq on $(date)."
-	   cat ${read_path_str}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+
+	   if command -v pigz &> /dev/null
+	   then
+	   	cat ${read_path_str}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | pigz -p ${threads} --fast > ${outdir}/${x}.filt.fastq.gz
+	   else
+	   	cat ${read_path_str}/${x}.fastq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+	   fi
+
 	   f=`cat ${outdir}/${x}.blocklist | wc -l` #number of adapter contaminated reads
 	   r1=`cat ${read_path_str}/${x}.fastq | wc -l` 
 	   r2=`awk -v r1=$r1 'BEGIN{ans=r1/4; print ans}'` #number of ccs reads
@@ -188,17 +238,25 @@ do
 	   echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${outdir}/${x}.stats
 	   echo "" >>${outdir}/${x}.stats
 	   echo "Finished on $(date)" >>${outdir}/${x}.stats
-
+	   rm ${read_path_str}/${x}.fasta
 	elif [ -s ${read_path_str}/${x}.fq ]
 	then
 	   echo "Identifying reads in ${x}.fq with adapter contamination on $(date)."
-	   cat ${read_path_str}/${x}.fq | sed -n '1~4s/^@/>/p;2~4p' | blastn -db $DBpath/pacbio_vectors_db -query - -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+	   cat ${read_path_str}/${x}.fq | sed -n '1~4s/^@/>/p;2~4p' > ${read_path_str}/${x}.fasta
+	   blastn -db $DBpath/pacbio_vectors_db -query ${read_path_str}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
 	   wait
 	   echo "Creating blocklist for ${x}.fq on $(date)."
 	   cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' -v var1="${adapterlength}" -v var2="${pctmatch}" '{if (($2 ~ /NGB00972/ && $3 >= var2 && $4 >= var1) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &
 	   wait
 	   echo "Removing adapter contaminated reads from ${x}.fq on $(date)."
-	   zcat ${read_path_str}/${x}.fastq.gz | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+
+	   if command -v pigz &> /dev/null
+	   then
+	   	cat ${read_path_str}/${x}.fq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | pigz -p ${threads} --fast > ${outdir}/${x}.filt.fastq.gz
+	   else
+	   	cat ${read_path_str}/${x}.fq | paste - - - - | grep -v -f ${outdir}/${x}.blocklist -F | tr "\t" "\n" | gzip -1 > ${outdir}/${x}.filt.fastq.gz
+	   fi
+
 	   f=`cat ${outdir}/${x}.blocklist | wc -l` #number of adapter contaminated reads
 	   r1=`cat ${read_path_str}/${x}.fq | wc -l` 
 	   r2=`awk -v r1=$r1 'BEGIN{ans=r1/4; print ans}'` #number of ccs reads
@@ -213,6 +271,7 @@ do
 	   echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${outdir}/${x}.stats
 	   echo "" >>${outdir}/${x}.stats
 	   echo "Finished on $(date)" >>${outdir}/${x}.stats
+	   rm ${read_path_str}/${x}.fasta
 	else
 	   echo "No files of proper name or filetype recognized. Exiting $(date)." 
 	fi
