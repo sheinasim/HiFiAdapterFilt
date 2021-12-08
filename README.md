@@ -39,13 +39,13 @@ If this script is useful to you, please cite the following in your publication:
   author = {Sim, Sheina B.},
   title = {HiFiAdapterFilt},
   url = {https://github.com/sheinasim/HiFiAdapterFilt},
-  DOI = {10.5281/zenodo.4716418},
-  version = {v1.0.0},
-  date = {2021-04-23},
+  DOI = {10.5281/zenodo.5751365},
+  version = {v2.0.0},
+  date = {2021-12-03},
 }
 ```
 
-<a href="https://doi.org/10.5281/zenodo.4716418"><img src="https://github.com/sheinasim/HiFiAdapterFilt/blob/master/zenodo.4716418.png" width="250" title="HiFiAdapterFilt DOI" alt="DOI"></a>
+<a href="https://doi.org/10.5281/zenodo.4716418"><img src="https://github.com/sheinasim/HiFiAdapterFilt/blob/master/zenodo.5751365.png" width="250" title="HiFiAdapterFilt DOI" alt="DOI"></a>
 
 Sheina B. Sim  
 USDA-ARS  
