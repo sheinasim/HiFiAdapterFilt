@@ -35,14 +35,20 @@ If no -p argument is provided, the script will run on all sequence files (.bam, 
 If this script is useful to you, please cite the following in your publication:
 
 ```
-@software{HiFiAdapterFilt,
-  author = {Sim, Sheina B.},
-  title = {HiFiAdapterFilt},
-  url = {https://github.com/sheinasim/HiFiAdapterFilt},
-  DOI = {10.5281/zenodo.5751365},
-  version = {v2.0.0},
-  date = {2021-12-03},
+@article{HiFiAdapterFilt,
+   author = {Sim, Sheina B. and Corpuz, Renee L. and Simmonds, Tyler J. and Geib, Scott M.},
+   title = {HiFiAdapterFilt, a memory efficient read processing pipeline, prevents occurrence of adapter sequence in PacBio HiFi reads and their negative impacts on genome assembly},
+   journal = {BMC Genomics},
+   volume = {23},
+   number = {1},
+   pages = {157},
+   ISSN = {1471-2164},
+   DOI = {10.1186/s12864-022-08375-1},
+   url = {https://doi.org/10.1186/s12864-022-08375-1},
+   year = {2022},
+   type = {Journal Article}
 }
+
 ```
 
 <a href="https://doi.org/10.5281/zenodo.4716418"><img src="https://github.com/sheinasim/HiFiAdapterFilt/blob/master/zenodo.5751365.png" width="250" title="HiFiAdapterFilt DOI" alt="DOI"></a>
