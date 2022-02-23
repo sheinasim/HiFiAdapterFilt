@@ -51,8 +51,6 @@ If this script is useful to you, please cite the following in your publication:
 
 ```
 
-<a href="https://doi.org/10.5281/zenodo.4716418"><img src="https://github.com/sheinasim/HiFiAdapterFilt/blob/master/zenodo.5751365.png" width="250" title="HiFiAdapterFilt DOI" alt="DOI"></a>
-
 Sheina B. Sim  
 USDA-ARS  
 US Pacific Basin Agricultural Research Service  
