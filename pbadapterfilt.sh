@@ -1,5 +1,6 @@
 #!/bin/bash
 
+version=2.0.0
 prefix=all
 threads=8
 outdir=$(pwd)
@@ -7,19 +8,29 @@ DBpath=$(echo $PATH | sed 's/:/\n/g' | grep "HiFiAdapterFilt/DB" | head -n 1)
 adapterlength=44
 pctmatch=97
 
+USAGE="Usage: $0 [ -p sequence file Prefix ] [ -l minimum match Length to filter. Default=44 ] [ -m minimum Match percentage to filter. Default=97]  [ -t number of Threads     for blastn. Default=8 ] [ -o Outdirectory prefix Default=. ]"
+
 unset name
 
-while getopts ':p:l:m:t:o:h' option
+
+while getopts ':p:l:m:t:o:cvh-' OPT
 do
-case "${option}"
+  if [ "$OPT" = "-" ]; then   # long option: reformulate OPT and OPTARG
+    OPT="${OPTARG%%=*}"       # extract long option name
+    OPTARG="${OPTARG#$OPT}"   # extract long option argument (may be empty)
+    OPTARG="${OPTARG#=}"      # if long option argument, remove assigning `=`
+  fi
+case "${OPT}"
 in
-p) prefix=${OPTARG};;
-l) adapterlength=${OPTARG};;
-m) pctmatch=${OPTARG};;
-t) threads=${OPTARG} ;;
-o) outdir=${OPTARG} ;;
-h) echo "Usage: $0 [ -p sequence file Prefix ] [ -l minimum match Length to filter. Default=44 ] [ -m minimum Match percentage to filter. Default=97]  [ -t number of Threads for blastn. Default=8 ] [ -o Outdirectory prefix Default=. ]"; exit ;;
-?) echo "Usage: $0 [ -p sequence file Prefix ] [ -l minimum match Length to filter. Default=44 ] [ -m minimum Match percentage to filter. Default=97]  [ -t number of Threads for blastn. Default=8 ] [ -o Outdirectory prefix Default=. ]"; exit ;;
+p | prefix ) prefix=${OPTARG};;
+l | adapterlength ) adapterlength=${OPTARG};;
+m | pctmatch ) pctmatch=${OPTARG};;
+t | threads ) threads=${OPTARG} ;;
+o | outdir ) outdir=${OPTARG} ;;
+c | cite ) echo "Sim, S.B., Corpuz, R.L., Simmonds, T.J. et al. HiFiAdapterFilt, a memory efficient read processing pipeline, prevents occurrence of adapter sequence in PacBio HiFi reads and their negative impacts on genome assembly. BMC Genomics 23, 157 (2022). https://doi.org/10.1186/s12864-022-08375-1"; exit 0 ;;
+v | version ) echo $version; exit 0 ;;
+h | help ) echo $USAGE; exit 0;;
+?*) echo "Illegal option -$OPT"; echo $USAGE; exit 2;;
 esac
 done
 
@@ -28,7 +39,7 @@ then
     printf "No options specified. \nFiltering files in working directory. \n"
 fi
 
-shift $((OPTIND - 1))
+shift $((OPTIND - 1)) # remove parsed options and args from $@ list
 
 ## Set variables based on options
 
