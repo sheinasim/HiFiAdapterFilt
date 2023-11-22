@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=2.0.1
+version=3.0.1
 prefix=all
 threads=8
 outdir=$(pwd)
