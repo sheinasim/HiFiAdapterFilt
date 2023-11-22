@@ -38,10 +38,12 @@ while getopts ":f:r:t:o:cv" opt; do
             outdir=$OPTARG
             ;;
         c)
-            citation=$OPTARG
+            echo "Sim, S.B., Corpuz, R.L., Simmonds, T.J. et al. HiFiAdapterFilt, a memory efficient read processing pipeline, prevents occurrence of adapter sequence in PacBio HiFi reads and their negative impacts on genome assembly. BMC Genomics 23, 157 (2022). https://doi.org/10.1186/s12864-022-08375-1"
+            exit 0 
             ;;
         v)
-            version=$OPTARG
+            echo $version
+            exit 0
             ;;
         \?)
             echo "Invalid option: -$OPTARG"
