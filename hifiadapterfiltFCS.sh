@@ -6,9 +6,9 @@ outdir=$(pwd)
 
 # Function to display script usage
 usage() {
-    echo "Usage: ./hifiadapterfiltFCS.sh -f <FCS adapter output file> -r <HiFi reads file> [-t] [-o] [-c] [-v]"
+    echo "Usage: ./hifiadapterfiltFCS.sh -f <FCS adapter output file (fcs_adaptor_report.txt)> -r <HiFi reads file> [-t] [-o] [-c] [-v]"
     echo "Options:"
-    echo "  -f <fcs file>: Required FCS adapter output file"
+    echo "  -f <fcs file>: Required FCS adapter output file (fcs_adaptor_report.txt)"
     echo "  -r <sequence file>: Required equence file"
     echo "  -t: Optional number of threads (Default=8)"
     echo "  -o: Optional output directory (Default=.)"
