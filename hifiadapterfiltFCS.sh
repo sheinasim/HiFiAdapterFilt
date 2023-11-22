@@ -80,7 +80,7 @@ then
 fi
 
 filetype=`ls ${reads} | awk -F "." '{if ($NF == "gz") print $(NF-1)"."$NF; else print $NF}'`
-readsprefix=`ls ${reads} | awk -F '.' '{print $1}'`
+readsprefix=`ls $reads | sed "s/\.${filetype}//"`
 
 if [ $filetype == "fq.gz" ]
 then
