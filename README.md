@@ -8,6 +8,7 @@ Dependencies:
 
 Optional:
 
+* NCBI FCS Adaptor
 * pigz
 
 Add script and database to your path using:  
@@ -17,11 +18,15 @@ Add script and database to your path using:
 
 ### Usage
   
-> ``bash pbadapterfilt.sh [ -p file Prefix ] [ -l minimum Length of adapter match to remove. Default=44 ] [ -m minimum percent Match of adapter to remove. Default=97 ] [ -t Number of threads for blastn. Default=8 ] [ -o outdirectory prefix Default=. ]`` 
+> ``bash hifiadapterfilt.sh [ -p file Prefix ] [ -l minimum Length of adapter match to remove. Default=44 ] [ -m minimum percent Match of adapter to remove. Default=97 ] [ -t Number of threads for blastn. Default=8 ] [ -o outdirectory prefix Default=. ]`` 
 
 All flags are optional. 
 
 If no -p argument is provided, the script will run on all sequence files (.bam, .fastq, .fastq.gz, .fq, .fq.gz) in the working directory.
+
+If using FCS adaptor to detect adapter contaminated reads use the hifiadapterfiltFCS.sh script
+
+> ``bash hifiadapterfiltFCS.sh -f <FCS adaptor output file> -r <HiFi reads file> [-t Number of threads for pigz. Defualt=8] [-o outdirectory prefix Default=.]``
 
 ## Outputs
 
