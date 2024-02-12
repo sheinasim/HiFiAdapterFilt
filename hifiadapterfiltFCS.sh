@@ -112,17 +112,17 @@ else
     cat ${readsprefix}.fastq | paste - - - - | grep -v -f ${readsprefix}.blocklist -F | tr "\t" "\n" | gzip - >${readsprefix}.fcsfilt.fastq.gz
 fi
 
-f=`cat ${readssprefix}.blocklist | wc -l` #number of adapter contaminated 
-r1=`cat ${readssprefix}.fastq | wc -l`
+f=`cat ${readsprefix}.blocklist | wc -l` #number of adapter contaminated 
+r1=`cat ${readsprefix}.fastq | wc -l`
 r2=`awk -v r1=$r1 'BEGIN{ans=r1/4; print ans}'` #number of ccs reads
 p1=`awk -v n1=$r2 -v n2=$f 'BEGIN{ans=n2/n1*100; print ans}'` #proportion of adapter contaminated reads
 r3=`awk -v r2=$r2 -v f=$f 'BEGIN{ans=r2-f; print ans}'` #number of reads retained
 p2=`awk -v p1=$p1 'BEGIN{ans=100-p1; print ans}'` #proportion of reads retained
-echo "For the" ${readssprefix} "dataset:" >>${readssprefix}.stats
-echo "" >>${readssprefix}.stats
-echo "Number of ccs reads:" $r2 >>${readssprefix}.stats
-echo "Number of adapter contaminated ccs reads:" $f "("$p1"% of total)" >>${readssprefix}.stats
-echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${readssprefix}.stats
-echo "" >>${readssprefix}.stats
-echo "Finished on $(date)" >>${readssprefix}.stats
+echo "For the" ${readsprefix} "dataset:" >>${readsprefix}.stats
+echo "" >>${readsprefix}.stats
+echo "Number of ccs reads:" $r2 >>${readsprefix}.stats
+echo "Number of adapter contaminated ccs reads:" $f "("$p1"% of total)" >>${readsprefix}.stats
+echo "Number of ccs reads retained:" $r3 "("$p2"% of total)" >>${readsprefix}.stats
+echo "" >>${readsprefix}.stats
+echo "Finished on $(date)" >>${readsprefix}.stats
 done
